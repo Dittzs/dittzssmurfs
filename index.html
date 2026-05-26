@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="icone.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KatarinaJob</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Barlow+Condensed:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red-deep:    #1a0000;
+    --red-mid:     #6b0000;
+    --red-bright:  #cc1111;
+    --red-hot:     #ff2a00;
+    --red-glow:    #ff5533;
+    --ember:       #ff8c00;
+    --ember-light: #ffb347;
+    --challenger:  #00d4ff;
+    --grandmaster: #ff4444;
+    --master:      #b060ff;
+    --diamond:     #57c8e8;
+    --emerald:     #00c853;
+    --platinum:    #48b0e0;
+    --gold-rank:   #d4a017;
+    --silver:      #a8b8c8;
+    --bg:          #070000;
+    --surface:     #0f0000;
+    --surface2:    #160000;
+    --border:      rgba(204,17,17,0.35);
+    --text:        #ffe8e0;
+    --text-dim:    #9a5050;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html, body {
+    width: 100%; min-height: 100vh;
+    background: var(--bg);
+    font-family: 'Barlow Condensed', sans-serif;
+    color: var(--text);
+  }
+
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background:
+      radial-gradient(ellipse 70% 50% at 15% 40%, rgba(180,0,0,0.09) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 85% 60%, rgba(120,0,0,0.07) 0%, transparent 60%);
+    pointer-events:none; z-index:0;
+  }
+
+  .page {
+    position:relative; z-index:1;
+    width:100%; min-height:100vh;
+    display:flex; flex-direction:column;
+  }
+
+  /* ── BANNER ── */
+  .banner {
+    position:relative;
+    width:100%; height:200px;
+    overflow:hidden;
+    background:#0a0000;
+    flex-shrink:0;
+  }
+  .banner-bg {
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 120% 140% at 65% 60%, rgba(180,10,0,0.45) 0%, transparent 60%),
+      radial-gradient(circle at 20% 80%, rgba(100,0,0,0.3) 0%, transparent 45%),
+      radial-gradient(circle at 85% 10%, rgba(255,80,0,0.12) 0%, transparent 35%);
+  }
+  .banner-slash { position:absolute; inset:0; overflow:hidden; }
+  .banner-slash::before {
+    content:''; position:absolute;
+    top:-20px; left:48%; width:3px; height:300px;
+    background:linear-gradient(180deg,transparent,rgba(255,60,0,0.5),transparent);
+    transform:rotate(18deg); filter:blur(2px);
+  }
+  .banner-slash::after {
+    content:''; position:absolute;
+    top:-20px; left:52%; width:1px; height:300px;
+    background:linear-gradient(180deg,transparent,rgba(255,140,0,0.3),transparent);
+    transform:rotate(18deg);
+  }
+  .embers { position:absolute; inset:0; overflow:hidden; }
+  .ember {
+    position:absolute; border-radius:50%;
+    animation:rise linear infinite; opacity:0;
+  }
+  @keyframes rise {
+    0%   { transform:translateY(0) translateX(0) scale(1); opacity:0; }
+    15%  { opacity:1; }
+    85%  { opacity:0.7; }
+    100% { transform:translateY(-180px) translateX(var(--sway)) scale(0.3); opacity:0; }
+  }
+
+  @keyframes pisca {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+  .banner-title {
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    text-align:center; white-space:nowrap;
+  }
+  .banner-title h1 {
+    font-family:'Black Ops One',sans-serif;
+    font-size:clamp(36px,5vw,64px);
+    letter-spacing:4px; line-height:1; color:#fff;
+    text-shadow:0 0 20px rgba(255,40,0,0.9),0 0 50px rgba(200,0,0,0.5),3px 3px 0 rgba(0,0,0,0.9);
+  }
+  .banner-title h1 span {
+    color:var(--ember);
+    text-shadow:0 0 20px rgba(255,140,0,0.8),3px 3px 0 rgba(0,0,0,0.9);
+  }
+  .banner::after {
+    content:''; position:absolute;
+    bottom:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg,transparent,var(--red-bright),var(--ember),var(--red-bright),transparent);
+    box-shadow:0 0 18px var(--red-hot),0 0 40px rgba(200,0,0,0.4);
+  }
+
+  /* ── API CONFIG ── */
+  .api-config {
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    padding:11px 24px;
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  }
+  .api-config label {
+    font-size:11px; font-weight:700; letter-spacing:2px;
+    color:var(--ember); text-transform:uppercase; white-space:nowrap;
+  }
+  .api-config input[type="password"],
+  .api-config input[type="text"] {
+    flex:1; min-width:260px;
+    background:rgba(0,0,0,0.5);
+    border:1px solid rgba(204,17,17,0.25);
+    color:var(--text);
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:13px; padding:7px 12px; border-radius:2px; outline:none;
+    transition:border-color 0.2s;
+  }
+  .api-config input:focus {
+    border-color:var(--red-glow);
+    box-shadow:0 0 10px rgba(200,0,0,0.2);
+  }
+  .api-config input::placeholder { color:var(--text-dim); font-size:12px; }
+  .region-select {
+    background:rgba(0,0,0,0.5);
+    border:1px solid rgba(204,17,17,0.25);
+    color:var(--text);
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:13px; padding:7px 10px; border-radius:2px; outline:none; cursor:pointer;
+  }
+  .region-select option { background:#1a0000; }
+
+  .saved-indicator {
+    font-size:11px; color:var(--emerald);
+    letter-spacing:1px; opacity:0;
+    transition:opacity 0.3s;
+  }
+  .saved-indicator.show { opacity:1; }
+
+  /* ── TABLE ── */
+  .table-wrap { flex:1; display:flex; flex-direction:column; }
+
+  .table-header {
+    background:linear-gradient(90deg,#5a0000,var(--red-bright),#700000,var(--red-bright),#5a0000);
+    display:grid;
+    grid-template-columns: 1.2fr 1.4fr 1.4fr 1.2fr 0.7fr 76px;
+    border-bottom:2px solid var(--red-hot);
+    box-shadow:0 4px 24px rgba(200,0,0,0.3);
+  }
+  .th {
+    padding:13px 16px;
+    font-family:'Black Ops One',sans-serif;
+    font-size:11px; letter-spacing:2px; color:#fff;
+    text-transform:uppercase;
+    display:flex; align-items:center; gap:7px;
+    text-shadow:0 1px 4px rgba(0,0,0,0.7);
+  }
+
+  .table-body { background:var(--surface); }
+
+  .row {
+    display:grid;
+    grid-template-columns:1.2fr 1.4fr 1.4fr 1.2fr 0.7fr 76px;
+    border-bottom:1px solid rgba(180,0,0,0.12);
+    transition:background 0.15s;
+    position:relative;
+  }
+  .row::before {
+    content:''; position:absolute;
+    left:0; top:0; bottom:0; width:2px;
+    background:transparent; transition:background 0.15s;
+  }
+  .row:hover { background:rgba(180,0,0,0.07); }
+  .row:hover::before { background:var(--red-bright); box-shadow:0 0 8px var(--red-hot); }
+  .row.adding { animation:rowIn 0.25s ease; }
+  @keyframes rowIn { from{opacity:0;transform:translateX(-6px)} to{opacity:1;transform:none} }
+
+  .cell {
+    padding:10px 16px; font-size:14px; font-weight:500;
+    display:flex; align-items:center; color:var(--text); overflow:hidden;
+  }
+  .cell input {
+    background:transparent; border:none;
+    color:var(--text);
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:14px; font-weight:500; width:100%; outline:none;
+  }
+  .cell input::placeholder { color:var(--text-dim); font-size:13px; }
+  .cell input:focus { color:#fff; }
+  .nick-cell input { color:var(--red-glow); font-weight:600; }
+  .pass-cell { font-family:monospace; font-size:15px; letter-spacing:2px; color:var(--text-dim); }
+
+  /* elo */
+  .elo-challenger  { color:var(--challenger);  font-weight:700; text-shadow:0 0 10px rgba(0,212,255,0.5); }
+  .elo-grandmaster { color:var(--grandmaster); font-weight:700; text-shadow:0 0 10px rgba(255,68,68,0.5); }
+  .elo-master      { color:var(--master);      font-weight:700; }
+  .elo-diamond     { color:var(--diamond);     font-weight:600; }
+  .elo-emerald     { color:var(--emerald);     font-weight:600; }
+  .elo-platinum    { color:var(--platinum);    font-weight:600; }
+  .elo-gold        { color:var(--gold-rank);   font-weight:600; }
+  .elo-silver      { color:var(--silver);      font-weight:600; }
+  .elo-unranked    { color:var(--text-dim);    font-style:italic; }
+  .elo-loading     { color:var(--red-glow);    animation:pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .lp-badge {
+    background:rgba(180,0,0,0.2);
+    border:1px solid rgba(204,17,17,0.4);
+    border-radius:2px; padding:2px 8px;
+    font-size:13px; font-weight:700; color:var(--red-glow);
+    min-width:40px; text-align:center;
+  }
+
+  .action-cell {
+    display:flex; align-items:center; justify-content:center;
+    gap:6px; padding:8px;
+  }
+  .btn-refresh, .btn-delete {
+    width:28px; height:28px; border:none; border-radius:2px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    font-size:13px; transition:all 0.15s;
+  }
+  .btn-refresh {
+    background:rgba(180,0,0,0.2); color:var(--red-glow);
+    border:1px solid rgba(204,17,17,0.4);
+  }
+  .btn-refresh:hover { background:rgba(200,0,0,0.4); box-shadow:0 0 10px rgba(200,0,0,0.35); }
+  .btn-refresh.spinning svg { animation:spin 0.8s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .btn-delete {
+    background:rgba(80,0,0,0.3); color:rgba(255,100,80,0.6);
+    border:1px solid rgba(180,0,0,0.2);
+  }
+  .btn-delete:hover { background:rgba(180,0,0,0.35); color:#ff7060; border-color:rgba(200,0,0,0.5); }
+
+  .add-row-btn {
+    width:100%; padding:12px; background:transparent; border:none;
+    border-top:1px dashed rgba(180,0,0,0.25);
+    color:var(--text-dim);
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:12px; font-weight:700; letter-spacing:3px; text-transform:uppercase;
+    cursor:pointer; transition:all 0.2s;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .add-row-btn:hover { background:rgba(180,0,0,0.07); color:var(--red-glow); }
+
+  .btn-refresh-all {
+    background:linear-gradient(135deg,#6b0000,var(--red-bright));
+    border:1px solid var(--red-glow); color:#fff;
+    font-family:'Black Ops One',sans-serif;
+    font-size:12px; letter-spacing:2px; text-transform:uppercase;
+    padding:8px 20px; border-radius:2px; cursor:pointer;
+    transition:all 0.2s; display:flex; align-items:center; gap:8px;
+    white-space:nowrap;
+  }
+  .btn-refresh-all:hover {
+    background:linear-gradient(135deg,var(--red-bright),var(--red-hot));
+    box-shadow:0 0 20px rgba(200,0,0,0.5); transform:translateY(-1px);
+  }
+
+  /* ── AUTO REFRESH ── */
+  .auto-row {
+    background:var(--surface2);
+    border-top:1px solid var(--border);
+    padding:10px 24px;
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  }
+  .auto-row label { font-size:11px; font-weight:700; letter-spacing:2px; color:var(--ember); text-transform:uppercase; }
+  .toggle-wrap { display:flex; align-items:center; gap:8px; }
+  .toggle {
+    width:36px; height:20px; background:rgba(180,0,0,0.3);
+    border:1px solid rgba(180,0,0,0.4);
+    border-radius:10px; cursor:pointer; position:relative; transition:background 0.2s;
+  }
+  .toggle.on { background:var(--red-bright); border-color:var(--red-glow); }
+  .toggle::after {
+    content:''; position:absolute;
+    top:2px; left:2px; width:14px; height:14px;
+    background:#fff; border-radius:50%;
+    transition:transform 0.2s;
+    box-shadow:0 1px 3px rgba(0,0,0,0.5);
+  }
+  .toggle.on::after { transform:translateX(16px); }
+  .interval-select {
+    background:rgba(0,0,0,0.4); border:1px solid rgba(180,0,0,0.25);
+    color:var(--text); font-family:'Barlow Condensed',sans-serif;
+    font-size:13px; padding:5px 8px; border-radius:2px; outline:none; cursor:pointer;
+  }
+  .interval-select option { background:#1a0000; }
+  .next-refresh { font-size:12px; color:var(--text-dim); letter-spacing:1px; }
+  .next-refresh span { color:var(--red-glow); font-weight:700; }
+
+  /* ── TIP ── */
+  .tip-box {
+    background:rgba(140,0,0,0.07);
+    border-top:1px solid rgba(180,0,0,0.15);
+    padding:10px 24px;
+    font-size:12px; color:var(--text-dim); line-height:1.6;
+  }
+  .tip-box strong { color:var(--red-glow); }
+
+  /* ── STATUS ── */
+  .status-bar {
+    position:fixed; bottom:20px; right:20px;
+    background:var(--surface2); border:1px solid var(--border);
+    border-radius:3px; padding:8px 14px;
+    font-size:12px; font-weight:600; letter-spacing:1px; color:var(--red-glow);
+    display:none; animation:slideIn 0.2s ease; z-index:100; max-width:300px;
+  }
+  .status-bar.error   { color:#ff8060; border-color:rgba(255,80,60,0.4); }
+  .status-bar.success { color:var(--emerald); border-color:rgba(0,200,80,0.4); }
+  .status-bar.show    { display:block; }
+  @keyframes slideIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:none} }
+
+  /* ── SERVER STATUS ── */
+  .server-badge {
+    font-size:11px; font-weight:700; letter-spacing:1px;
+    padding:3px 9px; border-radius:2px;
+    border:1px solid rgba(180,0,0,0.3);
+    color:var(--text-dim);
+  }
+  .server-badge.ok    { color:var(--emerald); border-color:rgba(0,200,80,0.4); background:rgba(0,200,80,0.07); }
+  .server-badge.error { color:#ff8060; border-color:rgba(255,80,60,0.3); background:rgba(255,50,30,0.07); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Banner -->
+  <div class="banner">
+    <div class="banner-bg"></div>
+    <div class="banner-slash"></div>
+    <div class="embers" id="embers"></div>
+    <div class="banner-title">
+    <h1>KATARINA<span>JOB</span></h1>
+    <p style="font-family:'Barlow Condensed',sans-serif; font-size:13px; letter-spacing:3px; margin-top:6px; animation:pisca 2s ease-in-out infinite;">@Dittzss</p>
+  </div>
+  </div>
+
+  <!-- API Config -->
+  <div class="api-config">
+    <label>🔑 Riot API Key</label>
+    <input type="password" id="apiKey" placeholder="RGAPI-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+      onfocus="this.type='text'" onblur="this.type='password'"
+      oninput="saveKey()" />
+    <select class="region-select" id="region" onchange="saveRegion()">
+      <option value="br1">BR</option>
+      <option value="na1">NA</option>
+      <option value="euw1">EUW</option>
+      <option value="la1">LAN</option>
+      <option value="la2">LAS</option>
+      <option value="kr">KR</option>
+      <option value="jp1">JP</option>
+      <option value="eun1">EUNE</option>
+      <option value="tr1">TR</option>
+      <option value="ru">RU</option>
+      <option value="oc1">OCE</option>
+    </select>
+    <span class="saved-indicator" id="savedInd">✓ Salvo</span>
+    <div style="flex:1"></div>
+    <span class="server-badge" id="serverBadge">⬤ Servidor</span>
+    <button class="btn-refresh-all" onclick="refreshAll()">⚡ ATUALIZAR TODOS</button>
+  </div>
+
+  <!-- Auto refresh bar -->
+  <div class="auto-row">
+    <label>🔄 Auto-atualizar</label>
+    <div class="toggle-wrap">
+      <div class="toggle" id="autoToggle" onclick="toggleAuto()"></div>
+      <select class="interval-select" id="intervalSel" onchange="changeInterval()">
+        <option value="60">1 min</option>
+        <option value="300" selected>5 min</option>
+        <option value="600">10 min</option>
+        <option value="1800">30 min</option>
+        <option value="3600">1 hora</option>
+      </select>
+    </div>
+    <div class="next-refresh" id="nextRefresh"></div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <div class="table-header">
+      <div class="th">👤 USER</div>
+      <div class="th">🔑 SENHA</div>
+      <div class="th">🎮 NICK</div>
+      <div class="th">🛡️ ELO</div>
+      <div class="th">🔒 LP</div>
+      <div class="th"></div>
+    </div>
+    <div class="table-body" id="tableBody"></div>
+    <button class="add-row-btn" onclick="addRow()">⚔ ADICIONAR CONTA</button>
+  </div>
+
+  <div class="tip-box">
+    <strong>💡 Como usar:</strong> Inicie o servidor com <strong>node server.js</strong> na pasta do projeto,
+    depois abra <strong>http://localhost:3000</strong> no navegador.
+    Nick no formato <strong>Nome#TAG</strong> (ex: <em>Katarina#BR1</em>). API Key em <strong>developer.riotgames.com</strong>.
+    Tudo fica <strong>salvo automaticamente</strong> — não precisa redigitar.
+  </div>
+</div>
+
+<div class="status-bar" id="statusBar"></div>
+
+<script>
+// ─── Persistence ─────────────────────────────────────────────────────────────
+const STORE = {
+  get: k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set: (k,v) => localStorage.setItem(k, JSON.stringify(v))
+};
+
+let rows = STORE.get('kata_rows') || [
+  { id:uid(), user:'akalizita',  pass:'Porsche89%',    nick:'specter#pagu', elo:'', lp:'' },
+  { id:uid(), user:'seraphin',   pass:'911taycan',     nick:'specter#pagu', elo:'', lp:'' },
+  { id:uid(), user:'namigirl',   pass:'boxter00',      nick:'specter#pagu', elo:'', lp:'' },
+  { id:uid(), user:'gravesgay',  pass:'lamborg#',      nick:'specter#pagu', elo:'', lp:'' },
+  { id:uid(), user:'ireliazi',   pass:'ioniaresiste@', nick:'specter#pagu', elo:'', lp:'' },
+  { id:uid(), user:'yuumiyuumi', pass:'renguinha0211', nick:'specter#pagu', elo:'', lp:'' },
+];
+
+function uid() { return Math.random().toString(36).slice(2,10); }
+function save() { STORE.set('kata_rows', rows); }
+
+function saveKey() {
+  STORE.set('kata_apikey', document.getElementById('apiKey').value);
+  flashSaved();
+}
+function saveRegion() {
+  STORE.set('kata_region', document.getElementById('region').value);
+  flashSaved();
+}
+let savedTimer;
+function flashSaved() {
+  const el = document.getElementById('savedInd');
+  el.classList.add('show');
+  clearTimeout(savedTimer);
+  savedTimer = setTimeout(() => el.classList.remove('show'), 1500);
+}
+
+// ─── Server check ─────────────────────────────────────────────────────────────
+async function checkServer() {
+  const badge = document.getElementById('serverBadge');
+  try {
+    // Fetch the page itself — any 200 means the server is up, no fake API calls
+    const r = await fetch('/', { signal: AbortSignal.timeout(2000) });
+    if (r.ok) {
+      badge.textContent = '⬤ Servidor OK';
+      badge.className = 'server-badge ok';
+    } else {
+      throw new Error('not ok');
+    }
+  } catch(e) {
+    badge.textContent = '⬤ Servidor offline';
+    badge.className = 'server-badge error';
+  }
+}
+
+// ─── Fetch rank via local server ──────────────────────────────────────────────
+async function fetchRankData(nick) {
+  console.log("[DEBUG] apiKey no campo:", document.getElementById("apiKey").value.trim().substring(0,20) + "...", "length:", document.getElementById("apiKey").value.trim().length);
+  const apiKey  = document.getElementById('apiKey').value.trim();
+  const platform = document.getElementById('region').value;
+  if (!apiKey) throw new Error('Insira sua Riot API Key');
+  if (!nick || !nick.includes('#')) throw new Error('Nick inválido (use Nome#TAG)');
+
+  const params = new URLSearchParams({ nick, platform, apikey: apiKey });
+  const res = await fetch(`/rank?${params}`);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || `Erro ${res.status}`);
+  return data; // { elo, lp }
+}
+
+// ─── Elo class ────────────────────────────────────────────────────────────────
+function eloClass(elo) {
+  if (!elo) return 'elo-unranked';
+  const e = elo.toLowerCase();
+  if (e.includes('challenger'))  return 'elo-challenger';
+  if (e.includes('grandmaster')) return 'elo-grandmaster';
+  if (e.includes('master') && !e.includes('grand')) return 'elo-master';
+  if (e.includes('diamond'))  return 'elo-diamond';
+  if (e.includes('emerald'))  return 'elo-emerald';
+  if (e.includes('platin'))   return 'elo-platinum';
+  if (e.includes('gold'))     return 'elo-gold';
+  if (e.includes('silver'))   return 'elo-silver';
+  return 'elo-unranked';
+}
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+function render() {
+  const body = document.getElementById('tableBody');
+  body.innerHTML = '';
+  rows.forEach(row => {
+    const div = document.createElement('div');
+    div.className = 'row adding';
+    div.id = `row-${row.id}`;
+    div.innerHTML = `
+      <div class="cell">
+        <input type="text" value="${esc(row.user)}" placeholder="usuário"
+          oninput="updateField('${row.id}','user',this.value)" />
+      </div>
+      <div class="cell pass-cell">
+        <input type="password" value="${esc(row.pass)}" placeholder="senha"
+          oninput="updateField('${row.id}','pass',this.value)"
+          onfocus="this.type='text'" onblur="this.type='password'" />
+      </div>
+      <div class="cell nick-cell">
+        <input type="text" value="${esc(row.nick)}" placeholder="Nome#TAG"
+          oninput="updateField('${row.id}','nick',this.value)"
+          onblur="autoFetch('${row.id}')"
+          onkeydown="if(event.key==='Enter'){autoFetch('${row.id}');this.blur()}" />
+      </div>
+      <div class="cell" id="elo-${row.id}">
+        <span class="${eloClass(row.elo)}">${row.elo||'—'}</span>
+      </div>
+      <div class="cell" id="lp-${row.id}">
+        ${row.lp!==''&&row.lp!==undefined
+          ? `<div class="lp-badge">${row.lp}</div>`
+          : '<span style="color:var(--text-dim)">—</span>'}
+      </div>
+      <div class="action-cell">
+        <button class="btn-refresh" id="btn-${row.id}" title="Atualizar" onclick="fetchRow('${row.id}')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M23 4v6h-6M1 20v-6h6"/>
+            <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+          </svg>
+        </button>
+        <button class="btn-delete" title="Remover" onclick="removeRow('${row.id}')">✕</button>
+      </div>
+    `;
+    body.appendChild(div);
+  });
+}
+
+// ─── Actions ──────────────────────────────────────────────────────────────────
+function updateField(id, field, val) {
+  const r = rows.find(r=>r.id===id); if(r){r[field]=val;save();}
+}
+async function autoFetch(id) {
+  const r = rows.find(r=>r.id===id);
+  if(r && r.nick && r.nick.includes('#')) await fetchRow(id);
+}
+async function fetchRow(id) {
+  const row = rows.find(r=>r.id===id); if(!row) return;
+  const eloEl = document.getElementById(`elo-${id}`);
+  const lpEl  = document.getElementById(`lp-${id}`);
+  const btn   = document.getElementById(`btn-${id}`);
+  eloEl.innerHTML = '<span class="elo-loading">Buscando...</span>';
+  lpEl.innerHTML  = '<span style="color:var(--text-dim)">...</span>';
+  btn.classList.add('spinning');
+  try {
+    const data = await fetchRankData(row.nick);
+    row.elo = data.elo; row.lp = String(data.lp); save();
+    eloEl.innerHTML = `<span class="${eloClass(row.elo)}">${row.elo}</span>`;
+    lpEl.innerHTML  = `<div class="lp-badge">${row.lp}</div>`;
+    showStatus(`✓ ${row.nick} — ${row.elo} ${row.lp} LP`, 'success');
+  } catch(e) {
+    row.elo = 'Erro'; row.lp = '';
+    eloEl.innerHTML = `<span style="color:#ff7060;font-size:12px">${e.message}</span>`;
+    lpEl.innerHTML  = '<span style="color:var(--text-dim)">—</span>';
+    showStatus(`✗ ${e.message}`, 'error');
+  } finally { btn.classList.remove('spinning'); }
+}
+async function refreshAll() {
+  showStatus('⚡ Atualizando todas as contas...', '');
+  for(const row of rows) {
+    if(row.nick && row.nick.includes('#')) {
+      await fetchRow(row.id);
+      await new Promise(r=>setTimeout(r,350));
+    }
+  }
+  showStatus('✓ Todas as contas atualizadas!', 'success');
+  resetCountdown();
+}
+function addRow() {
+  rows.push({id:uid(),user:'',pass:'',nick:'',elo:'',lp:''});
+  save(); render();
+  document.querySelector('#tableBody .row:last-child input')?.focus();
+}
+function removeRow(id) {
+  rows=rows.filter(r=>r.id!==id); save();
+  const el=document.getElementById(`row-${id}`);
+  if(el){el.style.opacity='0';el.style.transition='opacity 0.15s';setTimeout(()=>render(),150);}
+}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+
+// ─── Auto-refresh ─────────────────────────────────────────────────────────────
+let autoOn = STORE.get('kata_auto') || false;
+let intervalSec = STORE.get('kata_interval') || 300;
+let countdown = intervalSec;
+let countTimer = null;
+let refreshTimer = null;
+
+function toggleAuto() {
+  autoOn = !autoOn;
+  STORE.set('kata_auto', autoOn);
+  document.getElementById('autoToggle').classList.toggle('on', autoOn);
+  if (autoOn) startAuto(); else stopAuto();
+}
+
+function changeInterval() {
+  intervalSec = parseInt(document.getElementById('intervalSel').value);
+  STORE.set('kata_interval', intervalSec);
+  countdown = intervalSec;
+  if (autoOn) { stopAuto(); startAuto(); }
+}
+
+function startAuto() {
+  countdown = intervalSec;
+  updateCountdown();
+  countTimer = setInterval(() => {
+    countdown--;
+    updateCountdown();
+    if (countdown <= 0) {
+      countdown = intervalSec;
+      refreshAll();
+    }
+  }, 1000);
+}
+
+function stopAuto() {
+  clearInterval(countTimer);
+  document.getElementById('nextRefresh').textContent = '';
+}
+
+function resetCountdown() { countdown = intervalSec; }
+
+function updateCountdown() {
+  const m = Math.floor(countdown/60);
+  const s = countdown % 60;
+  const el = document.getElementById('nextRefresh');
+  if (!autoOn) { el.textContent = ''; return; }
+  el.innerHTML = `Próximo em <span>${m>0?m+'m ':''} ${String(s).padStart(2,'0')}s</span>`;
+}
+
+// ─── Status bar ───────────────────────────────────────────────────────────────
+let sTimer;
+function showStatus(msg,type){
+  const el=document.getElementById('statusBar');
+  el.textContent=msg;
+  el.className=`status-bar show${type?' '+type:''}`;
+  clearTimeout(sTimer);
+  sTimer=setTimeout(()=>el.classList.remove('show'),3500);
+}
+
+// ─── Embers ───────────────────────────────────────────────────────────────────
+function initEmbers(){
+  const c=document.getElementById('embers');
+  const colors=['#ff2a00','#ff5533','#ff8c00','#ffb347','#ff3300'];
+  for(let i=0;i<40;i++){
+    const e=document.createElement('div');
+    e.className='ember';
+    const sz=1.5+Math.random()*3;
+    const col=colors[Math.floor(Math.random()*colors.length)];
+    e.style.cssText=`left:${Math.random()*100}%;bottom:${Math.random()*30}px;
+      width:${sz}px;height:${sz}px;background:${col};
+      box-shadow:0 0 ${sz*2}px ${col};
+      animation-duration:${2+Math.random()*4}s;
+      animation-delay:${Math.random()*5}s;
+      --sway:${(Math.random()-0.5)*80}px;`;
+    c.appendChild(e);
+  }
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+initEmbers();
+
+// Restore saved values
+const savedKey = STORE.get('kata_apikey');
+if(savedKey) document.getElementById('apiKey').value = savedKey;
+const savedRegion = STORE.get('kata_region');
+if(savedRegion) document.getElementById('region').value = savedRegion;
+const savedInterval = STORE.get('kata_interval');
+if(savedInterval) { intervalSec = savedInterval; document.getElementById('intervalSel').value = savedInterval; }
+if(autoOn) { document.getElementById('autoToggle').classList.add('on'); startAuto(); }
+
+render();
+checkServer();
+setInterval(checkServer, 10000);
+</script>
+</body>
+</html>
